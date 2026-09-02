@@ -391,7 +391,7 @@ Examples:
     print(verifier.format_results(issues, show_fixes=not args.no_fixes))
     
     # Determine exit code
-    if args.fail_on-critical:
+    if args.fail_on_critical:
         critical_count = sum(1 for i in issues if i.severity == CodeIssue.SEVERITY_CRITICAL)
         sys.exit(1 if critical_count > 0 else 0)
     else:
