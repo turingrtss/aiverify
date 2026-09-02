@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVerify - Stop AI-Generated Bugs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; color: white; padding: 4rem 2rem; }
+        h1 { font-size: 3.5rem; margin-bottom: 1rem; }
+        .tagline { font-size: 1.5rem; opacity: 0.9; }
+        .install-box {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .feature {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .feature h3 { color: #667eea; margin-bottom: 1rem; }
+        .emoji { font-size: 2rem; margin-bottom: 1rem; display: block; }
+        .cta-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 1rem 0.5rem;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover { transform: translateY(-2px); }
+        .stats { text-align: center; color: white; padding: 2rem; }
+        .stat { display: inline-block; margin: 0 2rem; }
+        .stat-number { font-size: 3rem; font-weight: bold; }
+        .stat-label { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🔍 AIVerify</h1>
+            <p class="tagline">Stop AI-Generated Bugs Before They Ship</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="install-box">
+            <h2>Quick Start</h2>
+            <div class="code-block">
+# Install (one command)<br>
+curl -fsSL https://raw.githubusercontent.com/turingrtss/aiverify/master/install.sh | bash<br>
+<br>
+# Enable in your project<br>
+cd your-project<br>
+aiverify --init<br>
+<br>
+# That's it! Now runs on every commit
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Security Checks</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">&lt;500ms</div>
+                <div class="stat-label">Scan Speed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Config Needed</div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <span class="emoji">🔐</span>
+                <h3>Security Scanner</h3>
+                <p>Detects SQL injection, command injection, hardcoded secrets, weak crypto, SSRF, XSS, and more. OWASP Top 10 2026 coverage.</p>
+            </div>
+            
+            <div class="feature">
+                <span class="emoji">🤖</span>
+                <h3>AI Hallucination Detection</h3>
+                <p>Catches common AI coding mistakes: null derefs, missing error handling, hallucinated imports, off-by-one errors, type confusion.</p>
+            </div>
+            
+            <div class="feature">
+                <span class="emoji">⚡</span>
+                <h3>Blazing Fast</h3>
+                <p>Under 500ms for most repositories. Zero dependencies. Pure Python stdlib. Runs locally - no data leaves your machine.</p>
+            </div>
+            
+            <div class="feature">
+                <span class="emoji">🎯</span>
+                <h3>Zero Config</h3>
+                <p>Works out of the box. No config files, no setup, no API keys. Just install and run. Git hook integration with one command.</p>
+            </div>
+            
+            <div class="feature">
+                <span class="emoji">💡</span>
+                <h3>Fix Suggestions</h3>
+                <p>Every issue comes with a concrete fix suggestion. Learn security best practices while you code.</p>
+            </div>
+            
+            <div class="feature">
+                <span class="emoji">🔄</span>
+                <h3>CI/CD Ready</h3>
+                <p>Drop-in GitHub Actions, GitLab CI, Jenkins integration. Fail builds on critical issues automatically.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 4rem 0;">
+            <a href="https://github.com/turingrtss/aiverify" class="cta-button">View on GitHub</a>
+            <a href="https://github.com/sponsors/turingrtss" class="cta-button">Sponsor This Project</a>
+        </div>
+    </div>
+</body>
+</html>
