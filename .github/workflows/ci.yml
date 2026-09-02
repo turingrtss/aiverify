@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Test AIVerify on vulnerable code
+      run: |
+        python src/aiverify.py tests/test_vulnerable.py
+        
+    - name: Test init command
+      run: |
+        git config --global user.email "test@example.com"
+        git config --global user.name "Test User"
+        git init test-repo
+        cd test-repo
+        python ../src/aiverify.py --init
+        test -f .git/hooks/pre-commit
+        
+    - name: Self-scan
+      run: |
+        python src/aiverify.py src/
