@@ -2,7 +2,7 @@
 """
 AIVerify - AI Code Verification Tool
 Catches AI hallucinations and security issues in generated code.
-Version: 0.1.0
+Version: 0.2.0
 """
 
 import re
@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 @dataclass
 class CodeIssue:
@@ -35,50 +35,92 @@ class CodeIssue:
 
 
 class SecurityScanner:
-    """Security vulnerability detection."""
+    """Security vulnerability detection - OWASP Top 10 2026 focused."""
     
     PATTERNS = {
         # Secrets and credentials
         'hardcoded_secret': {
-            'pattern': r'(api[_-]?key|password|secret|token|auth[_-]?token)\s*=\s*["\'][\w\-/+=]{16,}["\']',
+            'pattern': r'(api[_-]?key|password|secret|token|auth[_-]?token|private[_-]?key)\s*=\s*["\'][\w\-/+=]{16,}["\']',
             'severity': CodeIssue.SEVERITY_CRITICAL,
             'message': 'Hardcoded secret detected',
             'fix': 'Use environment variables or a secrets manager'
         },
-        # SQL injection
+        # SQL injection - enhanced patterns
         'sql_injection': {
-            'pattern': r'(execute|query)\s*\([^)]*(%s|%d|\+|f["\'])',
+            'pattern': r'(execute|query|SELECT|INSERT|UPDATE|DELETE)\s*\([^)]*(%s|%d|\+|f["\'])',
             'severity': CodeIssue.SEVERITY_CRITICAL,
             'message': 'Potential SQL injection vulnerability',
             'fix': 'Use parameterized queries or an ORM'
         },
         # Command injection
         'command_injection': {
-            'pattern': r'(subprocess\.(call|run|Popen)|os\.system|exec)\s*\([^)]*\+',
+            'pattern': r'(subprocess\.(call|run|Popen)|os\.system|exec)\s*\([^)]*(\+|%)',
             'severity': CodeIssue.SEVERITY_CRITICAL,
             'message': 'Potential command injection',
             'fix': 'Use shell=False and pass args as list'
         },
-        # Dangerous functions
-        'dangerous_eval': {
-            'pattern': r'\b(eval|exec)\s*\(',
-            'severity': CodeIssue.SEVERITY_HIGH,
-            'message': 'Dangerous eval() or exec() usage',
-            'fix': 'Use ast.literal_eval() or safer alternatives'
+        # SSRF (Server-Side Request Forgery)
+        'ssrf': {
+            'pattern': r'requests\.(get|post)\s*\([^)]*input\(',
+            'severity': CodeIssue.SEVERITY_CRITICAL,
+            'message': 'Potential SSRF vulnerability - user input in request URL',
+            'fix': 'Validate and whitelist allowed domains'
         },
-        # Path traversal
+        # Path traversal - enhanced
         'path_traversal': {
-            'pattern': r'open\s*\([^)]*\+',
+            'pattern': r'open\s*\([^)]*(\+|%|f["\'].*\{)',
             'severity': CodeIssue.SEVERITY_HIGH,
             'message': 'Potential path traversal vulnerability',
-            'fix': 'Validate and sanitize file paths'
+            'fix': 'Validate and sanitize file paths, use os.path.join()'
+        },
+        # Insecure deserialization
+        'insecure_deser': {
+            'pattern': r'(pickle\.loads|yaml\.load|jsonpickle\.decode)\s*\(',
+            'severity': CodeIssue.SEVERITY_CRITICAL,
+            'message': 'Insecure deserialization - RCE risk',
+            'fix': 'Use yaml.safe_load() or avoid deserializing untrusted data'
         },
         # Weak crypto
         'weak_crypto': {
-            'pattern': r'\b(md5|sha1)\s*\(',
+            'pattern': r'\b(md5|sha1|DES)\s*\(',
             'severity': CodeIssue.SEVERITY_MEDIUM,
             'message': 'Weak cryptographic algorithm',
-            'fix': 'Use SHA-256 or stronger'
+            'fix': 'Use SHA-256, SHA-3, or AES-256'
+        },
+        # Missing authentication
+        'no_auth_check': {
+            'pattern': r'@app\.route\([^)]*\)(?!\s*@(login_required|auth|require))',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'Route without authentication decorator',
+            'fix': 'Add @login_required or equivalent'
+        },
+        # XSS vulnerability
+        'xss': {
+            'pattern': r'(innerHTML|document\.write)\s*=.*\+',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'Potential XSS vulnerability',
+            'fix': 'Use textContent or sanitize HTML'
+        },
+        # Insecure random
+        'weak_random': {
+            'pattern': r'random\.(random|randint|choice)\s*\(',
+            'severity': CodeIssue.SEVERITY_MEDIUM,
+            'message': 'Using non-cryptographic random for security',
+            'fix': 'Use secrets module for security-sensitive randomness'
+        },
+        # Debug mode in production
+        'debug_mode': {
+            'pattern': r'(debug\s*=\s*True|DEBUG\s*=\s*True|app\.run\(debug=True)',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'Debug mode enabled - information disclosure',
+            'fix': 'Set debug=False in production'
+        },
+        # Broad exception catching
+        'catch_all_exception': {
+            'pattern': r'except\s*:(?!\s*#)',
+            'severity': CodeIssue.SEVERITY_LOW,
+            'message': 'Bare except clause - catches all exceptions',
+            'fix': 'Catch specific exceptions'
         },
     }
     
@@ -112,29 +154,64 @@ class SecurityScanner:
 
 
 class AIHallucinationDetector:
-    """Detects common AI coding mistakes."""
+    """Detects common AI coding mistakes and hallucinations."""
     
     PATTERNS = {
         # Null pointer dereference
         'null_deref': {
             'pattern': r'(\w+)\s*=\s*None.*\n.*\1\.',
             'severity': CodeIssue.SEVERITY_MEDIUM,
-            'message': 'Potential null dereference',
-            'fix': 'Add null check before accessing'
-        },
-        # Infinite loop patterns AI often generates
-        'infinite_loop': {
-            'pattern': r'while\s+True:.*\n(?:(?!break|return).)*$',
-            'severity': CodeIssue.SEVERITY_HIGH,
-            'message': 'Potential infinite loop without break',
-            'fix': 'Add break condition or timeout'
+            'message': 'Potential null dereference after None assignment',
+            'fix': 'Add null check: if var is not None:'
         },
         # Missing error handling on network calls
-        'missing_error_handling': {
-            'pattern': r'requests\.(get|post|put|delete)\([^)]+\)\s*$',
+        'missing_try_catch': {
+            'pattern': r'(requests\.(get|post|put|delete)|urllib\.request)\([^)]+\)\s*$',
             'severity': CodeIssue.SEVERITY_MEDIUM,
             'message': 'Network call without error handling',
             'fix': 'Wrap in try-except block'
+        },
+        # Hallucinated imports - common patterns
+        'hallucinated_import': {
+            'pattern': r'from\s+(sklearn\.experimental|pandas\.v2|numpy\.future|requests\.async)\s+import',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'Potentially hallucinated or non-existent import',
+            'fix': 'Verify import exists in library documentation'
+        },
+        # Off-by-one errors
+        'off_by_one': {
+            'pattern': r'range\([^)]*\)\s*.*\[.*\+\s*1\]',
+            'severity': CodeIssue.SEVERITY_MEDIUM,
+            'message': 'Potential off-by-one error in array access',
+            'fix': 'Review loop bounds and array indexing'
+        },
+        # Missing edge case handling
+        'no_empty_check': {
+            'pattern': r'(\w+)\[0\](?!.*if.*len\(\1\))',
+            'severity': CodeIssue.SEVERITY_MEDIUM,
+            'message': 'Array access without empty check',
+            'fix': 'Add: if len(array) > 0:'
+        },
+        # Type confusion
+        'type_confusion': {
+            'pattern': r'int\([^)]*\).*\+\s*["\']',
+            'severity': CodeIssue.SEVERITY_MEDIUM,
+            'message': 'Mixing numeric and string types',
+            'fix': 'Use str() for concatenation or keep types consistent'
+        },
+        # Resource leak
+        'resource_leak': {
+            'pattern': r'open\([^)]*\)(?!.*with\s)',
+            'severity': CodeIssue.SEVERITY_LOW,
+            'message': 'File opened without context manager - resource leak',
+            'fix': 'Use: with open(...) as f:'
+        },
+        # Async/await misuse
+        'async_misuse': {
+            'pattern': r'async\s+def.*(?!await)',
+            'severity': CodeIssue.SEVERITY_MEDIUM,
+            'message': 'Async function with no await - likely incorrect',
+            'fix': 'Remove async or add await calls'
         },
     }
     
@@ -283,7 +360,7 @@ Examples:
   aiverify .                    # Scan current directory
   aiverify src/main.py          # Scan specific file
   aiverify . --fail-on-critical # Exit 1 if critical issues found
-  aiverify init                 # Set up pre-commit hook
+  aiverify --init               # Set up pre-commit hook
         """
     )
     
@@ -314,7 +391,7 @@ Examples:
     print(verifier.format_results(issues, show_fixes=not args.no_fixes))
     
     # Determine exit code
-    if args.fail_on_critical:
+    if args.fail_on-critical:
         critical_count = sum(1 for i in issues if i.severity == CodeIssue.SEVERITY_CRITICAL)
         sys.exit(1 if critical_count > 0 else 0)
     else:
@@ -323,5 +400,3 @@ Examples:
 
 if __name__ == "__main__":
     main()
-
-# aiverify: disable
