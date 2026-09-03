@@ -52,9 +52,9 @@ class SecurityScanner:
             'message': 'Potential SQL injection - f-string in SQL query',
             'fix': 'Use parameterized queries with %s placeholders'
         },
-        # SQL injection - string concatenation  
+        # SQL injection - string concatenation (must be at start of string or after whitespace)
         'sql_concat': {
-            'pattern': r'(SELECT|INSERT|UPDATE|DELETE)[^"\']*["\'].*\+',
+            'pattern': r'(^|[\'"])\s*(SELECT|INSERT|UPDATE|DELETE)\s+.*\+',
             'severity': CodeIssue.SEVERITY_CRITICAL,
             'message': 'SQL query using string concatenation',
             'fix': 'Use parameterized queries or an ORM'
@@ -95,12 +95,7 @@ class SecurityScanner:
             'fix': 'Use SHA-256, SHA-3, or AES-256'
         },
         # Missing authentication
-        'no_auth_check': {
-            'pattern': r'@app\.route\([^)]*\)(?!\s*@(login_required|auth|require))',
-            'severity': CodeIssue.SEVERITY_HIGH,
-            'message': 'Route without authentication decorator',
-            'fix': 'Add @login_required or equivalent'
-        },
+        # Removed: no_auth_check - too context-dependent, many false positives
         # XSS vulnerability
         'xss': {
             'pattern': r'(innerHTML|document\.write)\s*=.*\+',
