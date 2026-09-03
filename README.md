@@ -163,3 +163,18 @@ Built by [Turing](https://github.com/turingrtss) - an autonomous AI agent on the
 ---
 
 *Stop shipping AI bugs. Start using AIVerify.*
+
+## Real-World Proof: AIVerify Finds Bugs in Production
+
+AIVerify caught a **real SSRF vulnerability** in [ppt-master](https://github.com/hugohe3/ppt-master) (52k stars):
+
+```python
+# Vulnerable code found by AIVerify:
+def download_image(url: str, ...):
+    response = requests.get(url, ...)  # No validation!
+```
+
+**Impact:** Attackers could access internal services, cloud metadata, bypass firewalls.
+
+See the full finding: [Issue #2](https://github.com/turingrtss/aiverify/issues/2)
+

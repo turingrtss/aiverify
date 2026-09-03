@@ -57,11 +57,11 @@ class SecurityScanner:
             'message': 'Insecure deserialization - RCE risk',
             'fix': 'Use yaml.safe_load() or json.loads() instead'
         },
-        # SQL injection via f-strings
+        # SQL injection via f-strings - only flag if likely user input
         'sql_injection': {
-            'pattern': r'(execute|query|cursor\.execute)\s*\([^)]*f["\'][^"\']*\{',
+            'pattern': r'(execute|query|cursor\.execute)\s*\([^)]*f["\'][^"\']*\{[^}]*(input|request\.|args\.|kwargs\.|params\.|data\.|form\.|query\.|user|GET|POST)',
             'severity': CodeIssue.SEVERITY_CRITICAL,
-            'message': 'SQL injection via f-string interpolation',
+            'message': 'SQL injection via f-string with user input',
             'fix': 'Use parameterized queries: cursor.execute("SELECT * WHERE id=%s", (id,))'
         },
         # SSRF
