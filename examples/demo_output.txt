@@ -1,0 +1,8 @@
+
+🔍 AIVerify found 2 security issue(s):
+
+🚨 CRITICAL (2):
+  ❌ examples/vulnerable_api.py:19 [CRITICAL] command_injection: Command injection via string concatenation
+     💡 Use subprocess with shell=False and list args
+  ❌ examples/vulnerable_api.py:23 [CRITICAL] hardcoded_secret: Hardcoded secret detected (20+ chars)
+     💡 Use environment variables: os.environ.get("API_KEY")
