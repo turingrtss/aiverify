@@ -99,6 +99,13 @@ class SecurityScanner:
             'message': 'Weak PRNG (random module) for security-sensitive operation',
             'fix': 'Use secrets module: secrets.token_urlsafe(), secrets.choice()'
         },
+        # Template injection
+        'template_injection': {
+            'pattern': r'(render_template_string|Template\([^)]*\)\.render|\.format\([^)]*(request\.|args\[|params\[|input\())',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'Template injection - user input in template rendering',
+            'fix': 'Use render_template() with templates from filesystem, not user input'
+        },
     }
     
     def scan(self, content: str, filepath: str) -> List[CodeIssue]:
