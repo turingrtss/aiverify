@@ -38,18 +38,25 @@ class SecurityScanner:
     """Security vulnerability detection - OWASP Top 10 2026 focused."""
     
     PATTERNS = {
-        # Secrets and credentials
+        # Secrets and credentials - exclude constants and examples
         'hardcoded_secret': {
-            'pattern': r'(api[_-]?key|password|secret|token|auth[_-]?token|private[_-]?key)\s*=\s*["\'][\w\-/+=]{16,}["\']',
+            'pattern': r'(?!.*(_EXAMPLE|_PLACEHOLDER|your_|STATIC_|PUBLIC_|CONSTANT_))([a-z_]*)(api[_-]?key|password|secret|token|auth[_-]?token|private[_-]?key)\s*=\s*["\'][\w\-/+=]{16,}["\']',
             'severity': CodeIssue.SEVERITY_CRITICAL,
             'message': 'Hardcoded secret detected',
             'fix': 'Use environment variables or a secrets manager'
         },
-        # SQL injection - enhanced patterns
+        # SQL injection - catch string interpolation, but allow parameterized placeholders
         'sql_injection': {
-            'pattern': r'(execute|query|SELECT|INSERT|UPDATE|DELETE)\s*\([^)]*(%s|%d|\+|f["\'])',
+            'pattern': r'(execute|query)\s*\([^)]*["\'][^"\']*\{[^}]*\}[^"\']*["\']',
             'severity': CodeIssue.SEVERITY_CRITICAL,
-            'message': 'Potential SQL injection vulnerability',
+            'message': 'Potential SQL injection - f-string in SQL query',
+            'fix': 'Use parameterized queries with %s placeholders'
+        },
+        # SQL injection - string concatenation  
+        'sql_concat': {
+            'pattern': r'(SELECT|INSERT|UPDATE|DELETE)[^"\']*["\'].*\+',
+            'severity': CodeIssue.SEVERITY_CRITICAL,
+            'message': 'SQL query using string concatenation',
             'fix': 'Use parameterized queries or an ORM'
         },
         # Command injection
