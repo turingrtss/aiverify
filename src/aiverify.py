@@ -85,6 +85,13 @@ class SecurityScanner:
             'message': 'Code execution via eval/exec with user input - RCE risk',
             'fix': 'Never use eval/exec with user input. Use ast.literal_eval() for safe evaluation'
         },
+        # XML External Entity (XXE)
+        'xxe_vulnerability': {
+            'pattern': r'(?<!defused)(etree\.parse|etree\.fromstring|minidom\.parse|pulldom\.parse|xmlrpclib\.loads)\s*\(',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'XML parsing without entity protection - XXE vulnerability',
+            'fix': 'Use defusedxml library: from defusedxml import ElementTree'
+        },
     }
     
     def scan(self, content: str, filepath: str) -> List[CodeIssue]:
