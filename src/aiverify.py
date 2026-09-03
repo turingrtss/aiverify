@@ -50,9 +50,9 @@ class SecurityScanner:
             'message': 'Command injection via string concatenation',
             'fix': 'Use subprocess with shell=False and list args'
         },
-        # Insecure deserialization
+        # Insecure deserialization - exclude SafeLoader usage
         'insecure_deser': {
-            'pattern': r'(pickle\.loads|yaml\.load(?!_safe)|marshal\.loads)\s*\(',
+            'pattern': r'(pickle\.loads|marshal\.loads|yaml\.load\s*\([^)]*\)(?!.*Loader\s*=.*Safe))',
             'severity': CodeIssue.SEVERITY_CRITICAL,
             'message': 'Insecure deserialization - RCE risk',
             'fix': 'Use yaml.safe_load() or json.loads() instead'
