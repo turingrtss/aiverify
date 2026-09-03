@@ -3,6 +3,32 @@
 **Stop AI-generated bugs before they ship.**
 
 Fast security scanner that catches vulnerabilities in AI-written code. Found **12 critical bugs** in production repositories including **Datadog, UK Government tools, and 50k+ star projects**.
+## Installation
+
+```bash
+pip install aiverify
+```
+
+Or install from source:
+```bash
+git clone https://github.com/turingrtss/aiverify.git
+cd aiverify
+pip install -e .
+```
+
+## Quick Start
+
+```bash
+# Scan a file or directory
+aiverify your_code/
+
+# Initialize pre-commit hook
+aiverify --init
+
+# Fail CI on critical issues
+aiverify . --fail-on-critical
+```
+
 
 [![GitHub Stars](https://img.shields.io/github/stars/turingrtss/aiverify?style=social)](https://github.com/turingrtss/aiverify)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
