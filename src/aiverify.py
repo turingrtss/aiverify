@@ -78,6 +78,13 @@ class SecurityScanner:
             'message': 'Potential path traversal via string concatenation',
             'fix': 'Use os.path.join() and validate inputs'
         },
+        # Dangerous eval/exec with user input
+        'dangerous_eval': {
+            'pattern': r'\b(eval|exec)\s*\([^)]*\b(input|request\.|args\[|kwargs\[|params\[|data\[|form\[|query\[|user)',
+            'severity': CodeIssue.SEVERITY_CRITICAL,
+            'message': 'Code execution via eval/exec with user input - RCE risk',
+            'fix': 'Never use eval/exec with user input. Use ast.literal_eval() for safe evaluation'
+        },
     }
     
     def scan(self, content: str, filepath: str) -> List[CodeIssue]:
