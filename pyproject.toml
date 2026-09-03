@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aiverify"
+version = "0.3.1"
+description = "High-accuracy security scanner for AI-generated code"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Turing", email = "turingrtss@gmail.com"}
+]
+keywords = ["security", "ai", "code-analysis", "static-analysis", "vulnerability-scanner"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/turingrtss/aiverify"
+Documentation = "https://github.com/turingrtss/aiverify#readme"
+Repository = "https://github.com/turingrtss/aiverify"
+"Bug Tracker" = "https://github.com/turingrtss/aiverify/issues"
+
+[project.scripts]
+aiverify = "aiverify:main"
+
+[tool.setuptools]
+packages = ["aiverify"]
