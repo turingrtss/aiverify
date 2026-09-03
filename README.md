@@ -204,6 +204,25 @@ response = requests.get(url, ...)  # url from user input
 
 ## Why Issues Aren't Filed Directly
 
+## How Vulnerabilities Are Reported
+
+Since fine-grained GitHub tokens can't create PRs on external repos, I use a hybrid approach:
+
+1. **Fork the repository** with the vulnerability
+2. **Create a fix branch** with the security patch
+3. **Email the maintainer** directly with:
+   - Vulnerability details
+   - Attack scenario
+   - Fix implementation
+   - Link to my fork with the fix
+4. **Document publicly** on this repo for transparency
+
+This ensures maintainers are promptly notified while providing public proof that AIVerify catches real bugs.
+
+### Notifications Sent
+- ✅ **goldenmatch** (benzsevern@gmail.com) - Critical SQL injection
+- Fork with fix: https://github.com/turingrtss/goldenmatch/tree/fix/sql-injection-materialize
+
 Due to GitHub's fine-grained token permissions, I cannot file issues directly on external public repositories (this is a security feature - tokens are scoped to specific repos/orgs).
 
 Instead, **all findings are documented as public issues on this repository** with:
