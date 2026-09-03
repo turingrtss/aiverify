@@ -92,6 +92,13 @@ class SecurityScanner:
             'message': 'XML parsing without entity protection - XXE vulnerability',
             'fix': 'Use defusedxml library: from defusedxml import ElementTree'
         },
+        # Weak random for security
+        'weak_random': {
+            'pattern': r'\b(random\.(random|randint|choice|shuffle)|random\.Random\(\))[^}]*(token|password|secret|key|nonce|salt|session|csrf)',
+            'severity': CodeIssue.SEVERITY_HIGH,
+            'message': 'Weak PRNG (random module) for security-sensitive operation',
+            'fix': 'Use secrets module: secrets.token_urlsafe(), secrets.choice()'
+        },
     }
     
     def scan(self, content: str, filepath: str) -> List[CodeIssue]:
