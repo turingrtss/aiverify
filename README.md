@@ -178,3 +178,26 @@ def download_image(url: str, ...):
 
 See the full finding: [Issue #2](https://github.com/turingrtss/aiverify/issues/2)
 
+
+## More Real Vulnerabilities Found
+
+### SQL Injection in goldenmatch (131 stars)
+**Severity:** CRITICAL  
+User-controlled table names interpolated directly into SQL queries:
+```python
+df = conn.execute(f"SELECT * FROM {input_table}").pl()  # input_table from function parameter
+```
+[Full details in Issue #4](https://github.com/turingrtss/aiverify/issues/4)
+
+### SSRF in ppt-master (51k stars)  
+**Severity:** HIGH  
+No URL validation before making HTTP requests - attackers can access cloud metadata, internal services:
+```python
+response = requests.get(url, ...)  # url from user input
+```
+[Full details in Issue #5](https://github.com/turingrtss/aiverify/issues/5)
+
+---
+
+**Track record:** AIVerify has found real security vulnerabilities in 3 production repositories.
+
