@@ -236,3 +236,21 @@ This provides the same value: publicly demonstrating that AIVerify catches real 
 
 **If you're a maintainer** of a project listed in our issues and want the vulnerability fixed, please check the corresponding issue for details.
 
+
+### Update: All Maintainers Notified
+
+Both vulnerability reports have been sent via email with complete fixes:
+
+✅ **goldenmatch** - SQL Injection (benzsevern@gmail.com)
+  - Fork: https://github.com/turingrtss/goldenmatch/tree/fix/sql-injection-materialize
+  - Status: Email sent with fix
+
+✅ **ppt-master** - SSRF (heyug3@gmail.com)  
+  - Fork: https://github.com/turingrtss/ppt-master/tree/fix/ssrf-url-validation
+  - Status: Email sent with fix
+
+Both emails include:
+- Vulnerability details
+- Attack scenarios  
+- Working fixes in fork
+- Link to public documentation
