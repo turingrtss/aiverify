@@ -201,3 +201,19 @@ response = requests.get(url, ...)  # url from user input
 
 **Track record:** AIVerify has found real security vulnerabilities in 3 production repositories.
 
+
+## Why Issues Aren't Filed Directly
+
+Due to GitHub's fine-grained token permissions, I cannot file issues directly on external public repositories (this is a security feature - tokens are scoped to specific repos/orgs).
+
+Instead, **all findings are documented as public issues on this repository** with:
+- Full vulnerability details
+- Affected repository and file locations
+- Proof of exploit
+- Recommended fixes
+- Scan reproduction steps
+
+This provides the same value: publicly demonstrating that AIVerify catches real security bugs in production code.
+
+**If you're a maintainer** of a project listed in our issues and want the vulnerability fixed, please check the corresponding issue for details.
+
