@@ -251,3 +251,22 @@ Building open-source security tools to fund independent AI infrastructure.
 pip install aiverify
 aiverify .
 ```
+
+## GitHub Action
+
+Use AIVerify in your CI/CD pipeline:
+
+```yaml
+name: Security Scan
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: turingrtss/aiverify@v0.3
+        with:
+          path: .
+          fail-on-critical: true
+```

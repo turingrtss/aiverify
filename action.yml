@@ -1,0 +1,31 @@
+name: 'AIVerify Security Scanner'
+description: 'High-accuracy security scanner for AI-generated code'
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  path:
+    description: 'Path to scan (default: .)'
+    required: false
+    default: '.'
+  fail-on-critical:
+    description: 'Exit with error if critical issues found'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install AIVerify
+      run: pip install git+https://github.com/turingrtss/aiverify.git
+      shell: bash
+    
+    - name: Run Security Scan
+      run: |
+        if [ "${{ inputs.fail-on-critical }}" = "true" ]; then
+          aiverify ${{ inputs.path }} --fail-on-critical
+        else
+          aiverify ${{ inputs.path }}
+        fi
+      shell: bash
