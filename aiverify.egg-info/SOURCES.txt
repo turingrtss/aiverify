@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+aiverify/__init__.py
+aiverify/__main__.py
+aiverify.egg-info/PKG-INFO
+aiverify.egg-info/SOURCES.txt
+aiverify.egg-info/dependency_links.txt
+aiverify.egg-info/entry_points.txt
+aiverify.egg-info/top_level.txt
+tests/test_vulnerable.py

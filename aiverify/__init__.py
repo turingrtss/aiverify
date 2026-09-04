@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List, Optional
 from dataclasses import dataclass
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 @dataclass
 class CodeIssue:
@@ -43,11 +43,11 @@ class SecurityScanner:
             'message': 'Hardcoded secret detected (20+ chars)',
             'fix': 'Use environment variables: os.environ.get("API_KEY")'
         },
-        # Command injection
+        # Command injection - only flag shell=True with dynamic input
         'command_injection': {
-            'pattern': r'(subprocess\.(call|run|Popen)|os\.system)\s*\([^)]*(\+|%|f["\'])',
+            'pattern': r'(subprocess\.(call|run|Popen))\s*\([^)]*shell\s*=\s*True[^)]*(\+|%|f["\'])|os\.system\s*\([^)]*(\\+|%|f["\'])',
             'severity': CodeIssue.SEVERITY_CRITICAL,
-            'message': 'Command injection via string concatenation',
+            'message': 'Command injection via shell=True with dynamic input',
             'fix': 'Use subprocess with shell=False and list args'
         },
         # Insecure deserialization - exclude SafeLoader usage
@@ -64,11 +64,11 @@ class SecurityScanner:
             'message': 'SQL injection via f-string with user input',
             'fix': 'Use parameterized queries: cursor.execute("SELECT * WHERE id=%s", (id,))'
         },
-        # SSRF
+        # SSRF - only flag when URL comes from user input
         'ssrf': {
-            'pattern': r'requests\.(get|post)\s*\([^)]*\{|requests\.(get|post)\s*\([^)]*input\(',
+            'pattern': r'requests\.(get|post)\s*\([^)]*(request\.|input\(|args\[|params\[|data\[|form\[|user)',
             'severity': CodeIssue.SEVERITY_HIGH,
-            'message': 'Potential SSRF - user input in HTTP request',
+            'message': 'Potential SSRF - user input in HTTP request URL',
             'fix': 'Validate and whitelist allowed domains'
         },
         # Path traversal
@@ -85,11 +85,11 @@ class SecurityScanner:
             'message': 'Code execution via eval/exec with user input - RCE risk',
             'fix': 'Never use eval/exec with user input. Use ast.literal_eval() for safe evaluation'
         },
-        # XML External Entity (XXE)
+        # XML External Entity (XXE) - only flag when parsing untrusted/user input
         'xxe_vulnerability': {
-            'pattern': r'(?<!defused)(etree\.parse|etree\.fromstring|minidom\.parse|pulldom\.parse|xmlrpclib\.loads)\s*\(',
+            'pattern': r'(?<!defused)(etree\.parse|etree\.fromstring|minidom\.parse|pulldom\.parse|xmlrpclib\.loads)\s*\([^)]*(request\.|input\(|args\[|data\[|upload|user|file\(|open\()',
             'severity': CodeIssue.SEVERITY_HIGH,
-            'message': 'XML parsing without entity protection - XXE vulnerability',
+            'message': 'XML parsing of untrusted input without entity protection - XXE vulnerability',
             'fix': 'Use defusedxml library: from defusedxml import ElementTree'
         },
         # Weak random for security
@@ -163,7 +163,12 @@ class AIVerifier:
         for ext in extensions:
             for filepath in path.rglob(f'*{ext}'):
                 if any(part in filepath.parts for part in 
-                       ['.git', 'node_modules', '__pycache__', 'venv', '.venv', 'dist', 'build']):
+                       ['.git', 'node_modules', '__pycache__', 'venv', '.venv', 'dist', 'build',
+                        'test', 'tests', 'testing', 'examples', 'example', 'docs', 'doc',
+                        'fixtures', 'mock', 'mocks', 'vendor', 'third_party']):
+                    continue
+                # Skip test files by name
+                if filepath.name.startswith('test_') or filepath.name.endswith('_test.py'):
                     continue
                 
                 file_count += 1
